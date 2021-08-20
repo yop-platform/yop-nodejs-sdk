@@ -1,8 +1,8 @@
 
-const YopConfig = require("../yop/YopConfig");
+const YopConfig = require("./YopConfig");
 const urlencode = require('urlencode');
 class YopRequest{
-    constructor(appKey = '', secretKey, serverRoot = '', yopPublicKey = null){
+    constructor({appKey = '', secretKey, serverRoot = '', yopPublicKey = null} = {}){
         this.Config=null;
 
         this.format = 'json';
@@ -93,6 +93,7 @@ class YopRequest{
         this.name = value;
     }
 
+    // eslint-disable-next-line no-unused-vars
     __get(name)
     {
         // TODO: Implement __get() method.
@@ -113,7 +114,7 @@ class YopRequest{
 
     setSignRet(signRet)
     {
-        signRetStr = signRet ? 'true' : 'false';
+        const signRetStr = signRet ? 'true' : 'false';
         this.signRet = signRet;
         this.addParam(this.Config.SIGN_RETURN, signRetStr);
     }
@@ -190,7 +191,7 @@ class YopRequest{
      */
     toQueryString()
     {
-        StrQuery = "";
+        let StrQuery = "";
         for(let k in this.paramMap){
             let v = this.paramMap[k];
             StrQuery += StrQuery?"&":"";

@@ -54,7 +54,7 @@ class YopResponse{
         this.name = value;
 
     }
-    __get(name){
+    __get(){
         // TODO: Implement __get() method.
         return this.name;
     }

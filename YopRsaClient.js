@@ -1,19 +1,44 @@
-const utils = require("../../../libs/utils");
-const StringUtils = require('../yop/Util/StringUtils');
-const HttpUtils = require('../yop/Util/HttpUtils');
-const urlencode = require('urlencode');
-const MD5 = require('../../../libs/md5');
+const GetUniqueId = require("./Util/GetUniqueId");
+const StringUtils = require('./Util/StringUtils');
+const HttpUtils = require('./Util/HttpUtils');
+const MD5 = require('md5');
 const crypto = require('crypto');
-const YopResponse = require('../yop/YopResponse');
+const YopResponse = require('./YopResponse');
 const URLSafeBase64 = require('urlsafe-base64');
+Date.prototype.Format = function(fmt)   
+{ //author: meizz   
+  var o = {   
+    "M+" : this.getMonth()+1,                 //月份   
+    "d+" : this.getDate(),                    //日   
+    "h+" : this.getHours(),                   //小时   
+    "m+" : this.getMinutes(),                 //分   
+    "s+" : this.getSeconds(),                 //秒   
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+    "S"  : this.getMilliseconds()             //毫秒   
+  };   
+  if(/(y+)/.test(fmt))   
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+  for(var k in o)   
+    if(new RegExp("("+ k +")").test(fmt))   
+  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+  return fmt;   
+}
 class YopRsaClient{
     constructor()
     {
     }
-    static  post(methodOrUri, YopRequest)
+
+    /**
+     * 参数拼接与签名处理
+     * @param methodOrUri
+     * @param YopRequest
+     * @param method
+     * @returns type
+     */
+    static  post(methodOrUri, YopRequest, method)
     {
-        let response = this.postString(methodOrUri, YopRequest);
-        return response;
+        let httpReqOptions = this.getString(methodOrUri, YopRequest, method);
+        return httpReqOptions;
     }
     static unmarshal(content)
     {
@@ -27,8 +52,10 @@ class YopRsaClient{
                 for(let k in jsoncontent['error']){
                     let v = jsoncontent['error'][k];
                     if(!(v instanceof Array)){
+                        // eslint-disable-next-line 
                         yop_response.error += ((yop_response.error="") ? '' : ',') + '"' + k + '" : "' + v + '"';
                     }else{
+                         // eslint-disable-next-line
                         yop_response.error+= ((yop_response.error="") ? '' : ',') + '"' + k + '" : "' + JSON.parse(v) + '"';
                     }
                 }
@@ -113,6 +140,42 @@ class YopRsaClient{
         let res = verify.verify(public_key, sign, 'base64');
         return res;
     }
+    /**
+     * 对商户通知签名进行校验
+     */
+    static isValidNotifyResult(result, sign,public_key)
+    {
+        let sb = "";
+        if (!result) {
+            sb = "";
+        } else {
+            sb += result;
+        }
+        let r = public_key+"";
+        let a ="-----BEGIN PUBLIC KEY-----";
+        let b = "-----END PUBLIC KEY-----";
+        public_key = "";
+        let len = r.length;
+        let start = 0;
+        while(start<=len){
+            if(public_key.length){
+                public_key += r.substr(start,64)+'\n';
+            }else{
+                public_key = r.substr(start,64)+'\n';
+            }
+            start +=64;
+        }
+        public_key = a+'\n'+public_key+b;
+
+        let verify = crypto.createVerify('RSA-SHA256');
+            verify.update(sb);
+        sign = sign+"";
+        // sign = sign.substr(0,-7);
+        sign = sign.replace(/[-]/g,'+');
+        sign = sign.replace(/[_]/g,'/');
+        let res = verify.verify(public_key, sign, 'base64');
+        return res;
+    }
 
     /**
      * 解密数字信封
@@ -140,7 +203,7 @@ class YopRsaClient{
                 let decryted_key = this.rsaDecrypt(encryted_key_safe,this.key_format(isv_private_key));
                 let biz_param_arr = this.aesDecrypt(this.base64_safe_handler(digital_envelope_arr[1]),decryted_key).split('$');
                 event.result = biz_param_arr[0];
-                if(this.isValidRsaResult(biz_param_arr[0],biz_param_arr[1],yop_public_key)){
+                if(this.isValidNotifyResult(biz_param_arr[0],biz_param_arr[1],yop_public_key)){
                     event.status = 'success';
                 }else{
                     event.message = '验签失败';
@@ -190,7 +253,7 @@ class YopRsaClient{
      * @param {key} 密钥
      */
     static aesDecrypt(encrypted, key) {
-        const decipher = crypto.createDecipheriv('aes-128-ecb', key,new Buffer(0));
+        const decipher = crypto.createDecipheriv('aes-128-ecb', key,Buffer.alloc(0));
         let decrypted = decipher.update(encrypted, 'base64', 'utf8');
         decrypted += decipher.final('utf8');
         return decrypted;
@@ -231,38 +294,38 @@ class YopRsaClient{
     }
 
     /**
-     * @param $methodOrUri
+     * @param methodOrUri
      * @param $YopRequest
      * @return type
      */
-    static  postString(methodOrUri, YopRequest)
+    static  getString(methodOrUri, $YopRequest, method)
     {
-        let serverUrl = this.richRequest(methodOrUri, YopRequest);
-        YopRequest.absoluteURL = serverUrl;
-        let tmp_key = YopRequest.Config.APP_KEY;
-        let appKey = YopRequest[tmp_key];
+        let serverUrl = this.richRequest(methodOrUri, $YopRequest);
+        $YopRequest.absoluteURL = serverUrl;
+        let tmp_key = $YopRequest.Config.APP_KEY;
+        let appKey = $YopRequest[tmp_key];
         if(!appKey){
-            appKey = YopRequest.Config.CUSTOMER_NO;
-            YopRequest.removeParam(YopRequest.Config.APP_KEY);
+            appKey = $YopRequest.Config.CUSTOMER_NO;
+            $YopRequest.removeParam($YopRequest.Config.APP_KEY);
         }
         if(!appKey){
             console.log("appKey 与 customerNo 不能同时为空");
         }
-        let timestamp =new Date().Format("yyyy-MM-ddTHH:mm:ssZ");
+        let timestamp =new Date().Format("yyyy-MM-ddThh:mm:ssZ");
         let requestId = this.uuid();
         let headers = {};
         headers['x-yop-request-id'] = requestId;
         headers['x-yop-date'] = timestamp;
-        headers['x-yop-sdk-version'] = '3.0.0';
+        headers['x-yop-sdk-version'] = '3.0.2';
         let protocolVersion = "yop-auth-v2";
         let EXPIRED_SECONDS = "1800";
         let authString = protocolVersion + "/" + appKey + "/" + timestamp + "/" + EXPIRED_SECONDS;
         let headersToSignSet=[];
         headersToSignSet.push("x-yop-request-id");
         headersToSignSet.push("x-yop-date");
-        let _tmp = YopRequest.Config.APP_KEY;
-        appKey = YopRequest[_tmp];
-        if(StringUtils.isBlank(YopRequest.Config.CUSTOMER_NO)){
+        let _tmp = $YopRequest.Config.APP_KEY;
+        appKey = $YopRequest[_tmp];
+        if(StringUtils.isBlank($YopRequest.Config.CUSTOMER_NO)){
             headers['x-yop-appkey'] = appKey;
             headersToSignSet.push("x-yop-appkey");
         }else{
@@ -270,26 +333,25 @@ class YopRsaClient{
             headersToSignSet.push("x-yop-customerid");
         }
         let canonicalURI = HttpUtils.getCanonicalURIPath(methodOrUri);
-        let canonicalQueryString = this.getCanonicalQueryString(YopRequest, true);
+        let canonicalQueryString = this.getCanonicalQueryString($YopRequest, true);
         let headersToSign = this.getHeadersToSign(headers, headersToSignSet);
         let canonicalHeader = this.getCanonicalHeaders(headersToSign);
         let signedHeaders = "";
         if (headersToSignSet.length) {
             for(let key in headersToSign){
-                let value = headersToSign[key];
                 signedHeaders += signedHeaders.length == 0 ? "" : ";";
                 signedHeaders += key;
             }
             signedHeaders = signedHeaders.toLowerCase();
         }
-        let canonicalRequest = authString + "\n" + "POST" + "\n" +
+        let canonicalRequest = authString + "\n" + method + "\n" +
                                canonicalURI + "\n" + canonicalQueryString + "\n" + canonicalHeader;
-        if(!YopRequest.secretKey){
+        if(!$YopRequest.secretKey){
             console.log("secretKey must be specified");
         }
-        let r = YopRequest.secretKey;
-        let a ="-----BEGIN RSA PRIVATE KEY-----";
-        let b = "-----END RSA PRIVATE KEY-----";
+        let r = $YopRequest.secretKey;
+        let a ="-----BEGIN PRIVATE KEY-----";
+        let b = "-----END PRIVATE KEY-----";
         let private_key = "";
         let len = r.length;
         let start = 0;
@@ -310,6 +372,7 @@ class YopRsaClient{
         let sig_len = sig.length;
         let find_len = 0;
         let start_len = sig_len-1;
+        // eslint-disable-next-line no-constant-condition
         while(1){
             if(sig.substr(start_len,1) == "="){
             find_len++;
@@ -321,17 +384,17 @@ class YopRsaClient{
         sig = sig.substr(0,sig_len-find_len);
         let signToBase64 = sig;
         signToBase64 += '$SHA256';
-        headers['Authorization'] = "YOP-RSA2048-SHA256 " +
+        headers.Authorization = "YOP-RSA2048-SHA256 " +
                                     protocolVersion + "/" + 
                                     appKey + "/" + timestamp + "/" +
                                     EXPIRED_SECONDS + "/" + 
                                     signedHeaders + "/" + signToBase64;
-        let response = {
+        let httpReqOptions = {
             serverUrl:serverUrl,
-            YopRequest:YopRequest,
-            headers:headers
+            headers:headers,
+            encodedParamMap:HttpUtils.encodeParams($YopRequest)
         };
-        return response;
+        return httpReqOptions;
     }
 
     /**
@@ -420,31 +483,31 @@ class YopRsaClient{
     }
     /**
      * @param $YopRequest
-     * @param $forSignature
+     * @param forSignature
      * @return string
      */
-    static getCanonicalQueryString(YopRequest, forSignature)
+    static getCanonicalQueryString($YopRequest, forSignature)
     {
-        let ArrayList = [];
-        let StrQuery = "";
-        for(let k in YopRequest.paramMap){
-            let v = YopRequest.paramMap[k];
-            if(forSignature && (k.toLowerCase() == "Authorization".toLowerCase())){
+        let arr = [];
+        let queryStr = "";
+        for (let k in $YopRequest.paramMap) {
+            let v = $YopRequest.paramMap[k];
+            if (forSignature && (k.toLowerCase() === "Authorization".toLowerCase())) {
                 continue;
             }
-            ArrayList.push(k+"="+urlencode(v));
+            arr.push(HttpUtils.normalize(k) + "=" + HttpUtils.normalize(v));
         }
-        ArrayList.sort();
-        for(let i in ArrayList){
-            StrQuery +=  StrQuery.length == 0 ? "":"&";
-            StrQuery += ArrayList[i];
+        arr.sort();
+        for (let i in arr) {
+            queryStr += queryStr.length === 0 ? "" : "&";
+            queryStr += arr[i];
         }
-        return StrQuery;
-
+        return queryStr;
     }
 
+
     static uuid(){
-        let char = utils.getUniqueId(24)+""+new Date().getTime();
+        let char = GetUniqueId(24)+""+new Date().getTime();
         char = MD5(char);
         let uuid = "";
         uuid += char.substr(0,8)+'-';
@@ -491,4 +554,4 @@ class YopRsaClient{
 
 }
 
-module.exports = YopClient3;
+module.exports = YopRsaClient;

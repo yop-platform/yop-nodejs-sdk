@@ -1,0 +1,20 @@
+{
+  "name": "yop-nodejs-sdk",
+  "version": "3.0.2",
+  "description": "",
+  "main": "YopConfig.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.2",
+    "crypto-js": "^4.1.1",
+    "form-data": "^4.0.0",
+    "formstream": "^1.1.1",
+    "md5": "^2.3.0",
+    "urlencode": "^1.1.0",
+    "urlsafe-base64": "^1.0.0"
+  }
+}

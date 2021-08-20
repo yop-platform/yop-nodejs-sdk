@@ -55,6 +55,7 @@ class YopConfig{
         this.aesSecretKey = value;
     }
 
+    // eslint-disable-next-line no-unused-vars
     __get(name){
         return this.name;
     }
