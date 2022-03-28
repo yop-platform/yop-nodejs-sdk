@@ -1,4 +1,5 @@
 const GetUniqueId = require("./GetUniqueId");
+const HttpUtils = require('./HttpUtils');
 const Crypto = require('crypto');
 const MD5 = require('md5');
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -20,18 +21,18 @@ Date.prototype.Format = function (fmt) { //author: meizz
 }
 
 class RsaV3Util {
-    static getAuthHeaders(options, form) {
-        const {appKey, method, url, params, secretKey} = options
+    static getAuthHeaders(options) {
+        const {appKey, method, url, params = {}, secretKey} = options
         const timestamp = new Date().Format("yyyy-MM-ddThh:mm:ssZ");
         const authString = 'yop-auth-v3/' + appKey + "/" + timestamp + "/1800"
         const HTTPRequestMethod = method
         const CanonicalURI = url
-        const CanonicalQueryString = RsaV3Util.getCanonicalQueryString(params);
+        const CanonicalQueryString = RsaV3Util.getCanonicalQueryString(params, method);
 
         // v3 签名头，有序！！！
         const headers = {
             'x-yop-appkey': appKey,
-            'x-yop-content-sha256': RsaV3Util.getSha256AndHexStr(form),
+            'x-yop-content-sha256': RsaV3Util.getSha256AndHexStr(params),
             'x-yop-request-id': RsaV3Util.uuid(),
         }
         const CanonicalHeaders = RsaV3Util.getCanonicalHeaders(headers)
@@ -89,9 +90,10 @@ class RsaV3Util {
 
     }
 
-    static getCanonicalQueryString() {
-        // todo 构造query参数串，有序
-        return '';
+    static getCanonicalQueryString(params, method) {
+        if(method.toLowerCase() === 'post') return ''
+        if(Object.keys(params).length === 0) return ''
+        return this.getCanonicalParams(params)
     }
 
     static getCanonicalHeaders(headers) {
@@ -113,14 +115,45 @@ class RsaV3Util {
         uuid += char.substr(20, 12);
         return uuid;
     }
+    /**
+     * @param $params
+     * @return string
+     */
+     static getCanonicalParams(params={})
+     {
+        let paramStrings = [];
+        for(let key in params){
+            let value = params[key];
+            if(!key){
+                continue;
+            }
+            if(!value){
+                value = "";
+            }
+            key = key.trim();
+            key = HttpUtils.normalize(key);
+            value = HttpUtils.normalize(value.trim());
+            paramStrings.push(key + '=' + value);
+        }
+        paramStrings.sort();
+        let StrQuery = "";
+        for(let i in paramStrings){
+            let kv = paramStrings[i];
+            StrQuery += StrQuery.length ==0 ?"":"&";
+            StrQuery += kv;
+        }
+        return StrQuery;
+    }
 
-    static getSha256AndHexStr() {
-        // let sign = crypto.createHash('SHA256');
-        // sign.update(data);
-        // let sig = sign.digest('hex')
-        // todo 其他类型请求，根据请求体计算
-        // 文件上传，默认sha-256
-        return 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+    static getSha256AndHexStr(params) {
+        let str = ''
+        if(Object.keys(params).length !== 0) {
+          str = this.getCanonicalParams(params)
+        }
+        let sign = Crypto.createHash('SHA256');
+        sign.update(str);
+        let sig = sign.digest('hex')
+        return sig
     }
 }
 
