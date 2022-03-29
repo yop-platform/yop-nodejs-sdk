@@ -115,6 +115,7 @@ class RsaV3Util {
         uuid += char.substr(20, 12);
         return uuid;
     }
+    
     /**
      * @param $params
      * @return string
