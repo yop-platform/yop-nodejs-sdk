@@ -551,7 +551,9 @@ class YopRsaClient{
         return serverUrl;
     }
 
-
+    static getResult(str) {
+        return str.match(/"result"\s*:\s*({.*}),\s*"ts"/s)[1]
+    }
 }
 
 module.exports = YopRsaClient;
