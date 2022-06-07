@@ -5,8 +5,8 @@ const fs = require('fs')
 const options = {
   appKey: '你的appKey',
   secretKey: '你的私钥',
-  serverRoot: 'http://ycetest.yeepay.com:30228/yop-center', 
-  yopPublicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4g7dPL+CBeuzFmARI2GFjZpKODUROaMG+E6wdNfv5lhPqC3jjTIeljWU8AiruZLGRhl92QWcTjb3XonjaV6k9rf9adQtyv2FLS7bl2Vz2WgjJ0FJ5/qMaoXaT+oAgWFk2GypyvoIZsscsGpUStm6BxpWZpbPrGJR0N95un/130cQI9VCmfvgkkCaXt7TU1BbiYzkc8MDpLScGm/GUCB2wB5PclvOxvf5BR/zNVYywTEFmw2Jo0hIPPSWB5Yyf2mx950Fx8da56co/FxLdMwkDOO51Qg3fbaExQDVzTm8Odi++wVJEP1y34tlmpwFUVbAKIEbyyELmi/2S6GG0j9vNwIDAQAB',
+  serverRoot: 'xxx',  // 公网地址
+  yopPublicKey: 'xxxx', // YOP公钥
 }
 function getData({url, params, method, responseType = 'json'} = {}) {
   const authHeaders = RsaV3Util.getAuthHeaders({
@@ -20,6 +20,10 @@ function getData({url, params, method, responseType = 'json'} = {}) {
     headers: authHeaders,
     method: method,
     responseType: responseType,
+    transformResponse: [function (data) {
+      // 接口返回的未转换的原文
+      return data;
+    }],
   })
 }
 getData({
