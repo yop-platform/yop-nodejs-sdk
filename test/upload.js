@@ -1,11 +1,11 @@
 const HTTP = require('https');
 const FS = require('fs');
 const FormData = require('form-data');
-const RsaV3Util = require('./Util/RsaV3Util');
+const RsaV3Util = require('../Util/RsaV3Util');
 
 // 模拟表单
 const form = new FormData();
-form.append('merQual', FS.createReadStream('./README.md'));
+form.append('merQual', FS.createReadStream('../README.md'));
 const headers = form.getHeaders();
 
 // 计算、添加认证相关header
