@@ -1,7 +1,6 @@
 const querystring = require('querystring')
-const RsaV3Util = require('./Util/RsaV3Util')
+const RsaV3Util = require('../Util/RsaV3Util')
 const axios = require('axios')
-const fs = require('fs')
 const options = {
   appKey: '你的appKey',
   secretKey: '你的私钥',
@@ -52,22 +51,6 @@ getData({
 })
 .then(res => {
   console.log('res------>', res.data)
-})
-.catch(err => {
-  console.log('err------>', err)
-})
-
-getData({
-  url: '/rest/v1.0/test-wdc/test-param-parse/input-stream-result',
-  params:{
-    strParam: 'xxxxx',
-  },
-  responseType: 'stream',
-  method: 'GET'
-})
-.then(res => {
-  res.data.pipe(fs.createWriteStream('test.txt'))
-  console.log(res.data)
 })
 .catch(err => {
   console.log('err------>', err)
