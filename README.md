@@ -9,17 +9,17 @@
 ├── Util 工具目录
 │   ├── GetUniqueId.js
 │   ├── HttpUtils.js
-│   ├── RsaV3Util.js rsa签名工具
-│   ├── CashierSupport.js 收银台的签名算法
-│   └── VerifyUtils.js 业务结果签名和商户通知进行校验
+│   ├── RsaV3Util.js          //rsa签名工具
+│   ├── CashierSupport.js     //收银台的签名算法
+│   └── VerifyUtils.js        //业务结果签名和商户通知进行校验
 ├── package-lock.json
 ├── package.json
 └── test 示例代码
-    ├── download.js 下载示例
-    ├── notify.js 商户通知进行校验
-    ├── request.js post、get请求示例
-    ├── responseSignVerify.js 业务结果签名进行校验
-    └── upload.js 文件上传示例
+    ├── download.js            //下载示例
+    ├── notify.js              //商户通知进行校验
+    ├── request.js post、get   //请求示例
+    ├── responseSignVerify.js  //业务结果签名进行校验
+    └── upload.js              //文件上传示例
 
 ```
 ## 项目运行
