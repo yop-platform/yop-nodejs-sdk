@@ -22,7 +22,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 
 class RsaV3Util {
     static getAuthHeaders(options) {
-        const {appKey, method, url, params = {}, secretKey} = options
+        const {appKey, method, url, params = {}, secretKey, config = {}} = options
         const timestamp = new Date().Format("yyyy-MM-ddThh:mm:ssZ");
         const authString = 'yop-auth-v3/' + appKey + "/" + timestamp + "/1800"
         const HTTPRequestMethod = method
@@ -32,7 +32,7 @@ class RsaV3Util {
         // v3 签名头，有序！！！
         const headers = {
             'x-yop-appkey': appKey,
-            'x-yop-content-sha256': RsaV3Util.getSha256AndHexStr(params),
+            'x-yop-content-sha256': RsaV3Util.getSha256AndHexStr(params, config, method),
             'x-yop-request-id': RsaV3Util.uuid(),
         }
         const CanonicalHeaders = RsaV3Util.getCanonicalHeaders(headers)
@@ -146,10 +146,14 @@ class RsaV3Util {
         return StrQuery;
     }
 
-    static getSha256AndHexStr(params) {
+    static getSha256AndHexStr(params, config, method) {
         let str = ''
-        if(Object.keys(params).length !== 0) {
-          str = this.getCanonicalParams(params)
+        if (config.contentType.includes('application/json') && method.toLowerCase() === 'post') {
+          str = JSON.stringify(params)
+        } else {
+          if(Object.keys(params).length !== 0) {
+            str = this.getCanonicalParams(params)
+          }
         }
         let sign = Crypto.createHash('SHA256');
         sign.update(str);
