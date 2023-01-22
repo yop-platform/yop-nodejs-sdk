@@ -36,7 +36,7 @@ const getDatePost = function (options) {
 
     }
   }, (res) => {
-      const {statusCode} = res;
+      const statusCode = res.statusCode;
       const contentType = res.headers['content-type'];
       let error;
       if (statusCode !== 200) {
@@ -72,7 +72,7 @@ const getDatePost = function (options) {
   request.write(content);  
   request.end(); 
 }
-// getDatePost(options)
+getDatePost(options)
 // get请求
 const getDateGet = function (options) {
   const { params, config } = options
@@ -89,7 +89,7 @@ const getDateGet = function (options) {
 
     }
   }, (res) => {
-      const {statusCode} = res;
+      const statusCode = res.statusCode;
       const contentType = res.headers['content-type'];
       let error;
       if (statusCode !== 200) {
