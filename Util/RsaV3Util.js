@@ -133,6 +133,7 @@ class RsaV3Util {
             }
             key = key.trim();
             key = HttpUtils.normalize(key);
+            value = JSON.stringify(value)
             value = HttpUtils.normalize(value.trim());
             paramStrings.push(key + '=' + value);
         }
