@@ -54,6 +54,16 @@ class VerifyUtils {
      * @param {yop_public_key} 易宝开放平台公钥
      * @return {status:'数字信封处理状态 成功（success）失败（failed）',result:'报文',message:'错误信息'}
      */
+
+  /**
+   * 找到最后一个字符切割
+   */
+   static splitString(str, char) {
+    var index = str.lastIndexOf(char);
+    var firstPart = str.slice(0, index);
+    var secondPart = str.slice(index + 1);
+    return [firstPart, secondPart];
+  }
   static digital_envelope_handler (content,isv_private_key,yop_public_key){
     let event = {
         status: 'failed',
@@ -68,7 +78,8 @@ class VerifyUtils {
         event.message = '易宝开放平台公钥参数为空'
     }else{
         try {
-            let digital_envelope_arr = content.split('$');
+            // let digital_envelope_arr = content.split('$');
+            let digital_envelope_arr = this.splitString(content, '$');
             let encryted_key_safe = this.base64_safe_handler(digital_envelope_arr[0]);
             let decryted_key = this.rsaDecrypt(encryted_key_safe,this.key_format(isv_private_key));
             let biz_param_arr = this.aesDecrypt(this.base64_safe_handler(digital_envelope_arr[1]),decryted_key).split('$');
