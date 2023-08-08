@@ -72,8 +72,9 @@ class VerifyUtils {
             let encryted_key_safe = this.base64_safe_handler(digital_envelope_arr[0]);
             let decryted_key = this.rsaDecrypt(encryted_key_safe,this.key_format(isv_private_key));
             let biz_param_arr = this.aesDecrypt(this.base64_safe_handler(digital_envelope_arr[1]),decryted_key).split('$');
-            event.result = biz_param_arr[0];
-            if(this.isValidNotifyResult(biz_param_arr[0],biz_param_arr[1],yop_public_key)){
+            const sign = biz_param_arr.pop()
+            event.result = biz_param_arr.join('$')
+            if(this.isValidNotifyResult(event.result, sign, yop_public_key)){
                 event.status = 'success';
             }else{
                 event.message = '验签失败';
