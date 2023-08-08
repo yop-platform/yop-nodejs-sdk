@@ -82,7 +82,7 @@ class VerifyUtils {
             let digital_envelope_arr = this.splitString(content, '$');
             let encryted_key_safe = this.base64_safe_handler(digital_envelope_arr[0]);
             let decryted_key = this.rsaDecrypt(encryted_key_safe,this.key_format(isv_private_key));
-            let biz_param_arr = this.aesDecrypt(this.base64_safe_handler(digital_envelope_arr[1]),decryted_key).split('$');
+            let biz_param_arr = this.splitString(this.aesDecrypt(this.base64_safe_handler(digital_envelope_arr[1]),decryted_key), '$');
             const sign = biz_param_arr.pop()
             event.result = biz_param_arr.join('$')
             if(this.isValidNotifyResult(event.result, sign, yop_public_key)){
