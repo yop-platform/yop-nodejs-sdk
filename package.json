@@ -5,7 +5,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "crypto-js": "^4.1.1",
     "form-data": "^4.0.0",
     "formstream": "^1.1.1",
