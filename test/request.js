@@ -1,4 +1,3 @@
-const querystring = require('querystring')
 const RsaV3Util = require('../Util/RsaV3Util')
 const axios = require('axios')
 const options = {
@@ -6,6 +5,9 @@ const options = {
   secretKey: '你的私钥',
   serverRoot: 'xxx',  // 公网地址
   yopPublicKey: 'xxxx', // YOP公钥
+  config: {
+    contentType: 'application/x-www-form-urlencoded'
+  }
 }
 function getData({url, params, method, responseType = 'json'} = {}) {
   const authHeaders = RsaV3Util.getAuthHeaders({
@@ -15,7 +17,7 @@ function getData({url, params, method, responseType = 'json'} = {}) {
     params
   });
   return axios.request({
-    url: options.serverRoot + url + '?' + querystring.stringify(params),
+    url: options.serverRoot + url + '?' + RsaV3Util.getCanonicalParams(params, 'form-urlencoded'),
     headers: authHeaders,
     method: method,
     responseType: responseType,

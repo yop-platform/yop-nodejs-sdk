@@ -15,7 +15,7 @@ class HttpUtils{
     {
         let vStr = "";
         if (value) {
-            let bytes = this.stringToByte(value.toString());
+            let bytes =  Buffer.from(value.toString(), 'utf-8')
             for (let i = 0; i < bytes.length; i++) {
                 let byte = bytes[i];
                 let s = String.fromCharCode(byte);
