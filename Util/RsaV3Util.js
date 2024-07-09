@@ -22,7 +22,12 @@ Date.prototype.Format = function (fmt) { //author: meizz
 
 class RsaV3Util {
     static getAuthHeaders(options) {
-        const {appKey, method, url, params = {}, secretKey, config = {}} = options
+        const { appKey, method, url, params = {}, secretKey, config = {} } = options
+        if(config.contentType == 'application/json'){
+          for (const key in params) {
+            params[key] = HttpUtils.normalize(params[key])
+          }
+        }
         const timestamp = new Date().Format("yyyy-MM-ddThh:mm:ssZ");
         const authString = 'yop-auth-v3/' + appKey + "/" + timestamp + "/1800"
         const HTTPRequestMethod = method
@@ -120,7 +125,7 @@ class RsaV3Util {
      * @param $params
      * @return string
      */
-     static getCanonicalParams(params={})
+     static getCanonicalParams(params={}, type)
      {
         let paramStrings = [];
         for(let key in params){
@@ -133,8 +138,11 @@ class RsaV3Util {
             }
             key = key.trim();
             key = HttpUtils.normalize(key);
-            value = JSON.stringify(value)
-            value = HttpUtils.normalize(value.trim());
+            if(type === 'form-urlencoded') {
+              value = HttpUtils.normalize(HttpUtils.normalize(value));
+            } else {
+              value = HttpUtils.normalize(value.toString().trim());
+            }
             paramStrings.push(key + '=' + value);
         }
         paramStrings.sort();
