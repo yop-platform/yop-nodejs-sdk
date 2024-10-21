@@ -6,7 +6,7 @@ class VerifyUtils {
    */
   static isValidRsaResult(params)
   {
-    const result = this.getResult(params.data)
+    const result = params.data
     let sign = params.sign.replace('$SHA256', '')
     let public_key = params.publicKey
     let sb = "";
@@ -45,6 +45,7 @@ class VerifyUtils {
     return res;
   }
   static getResult(str) {
+    console.log(str)
     return str.match(/"result"\s*:\s*({.*}),\s*"ts"/s)[1]
   }
   /**

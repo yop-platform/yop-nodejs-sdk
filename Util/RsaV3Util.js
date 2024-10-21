@@ -90,7 +90,8 @@ class RsaV3Util {
 
         // 构造认证头
         headers.Authorization = "YOP-RSA2048-SHA256 " + authString + "/" +
-            signedHeaders + "/" + signToBase64;
+          signedHeaders + "/" + signToBase64;
+        headers['User-Agent'] = `nodejs/3.0.7/${process.version}/${process.platform}`
         return headers
 
     }
