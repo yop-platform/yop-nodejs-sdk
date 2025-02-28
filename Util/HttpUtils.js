@@ -15,14 +15,14 @@ class HttpUtils{
     {
         let vStr = "";
         if (value) {
-            let bytes =  Buffer.from(value.toString(), 'utf-8')
+          let bytes = Buffer.from(value.toString(), 'utf-8')
             for (let i = 0; i < bytes.length; i++) {
                 let byte = bytes[i];
                 let s = String.fromCharCode(byte);
                 if (s.match(/[0-9a-zA-Z._~-]/)) {
                     vStr += s;
                 } else {
-                    vStr += '%' + byte.toString(16).toUpperCase();
+                    vStr += '%' + byte.toString(16).padStart(2, '0').toUpperCase();
                 }
             }
         }
