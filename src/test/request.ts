@@ -1,6 +1,8 @@
-const RsaV3Util = require('../Util/RsaV3Util')
-const axios = require('axios')
-const options = {
+import { RsaV3Util } from '../Util/RsaV3Util';
+import axios from 'axios';
+import { RequestOptions, RequestParams } from '../types';
+
+const options: RequestOptions = {
   appKey: '你的appKey',
   secretKey: '你的私钥',
   serverRoot: 'xxx',  // 公网地址
@@ -8,28 +10,32 @@ const options = {
   config: {
     contentType: 'application/x-www-form-urlencoded'
   }
-}
-function getData({url, params, method, responseType = 'json'} = {}) {
+};
+
+function getData({ url, params = {}, method, responseType = 'json' }: RequestParams) {
   const authHeaders = RsaV3Util.getAuthHeaders({
     ...options,
     url,
     method,
     params
   });
+  
   return axios.request({
-    url: options.serverRoot + url + '?' + RsaV3Util.getCanonicalParams(params, 'form-urlencoded'),
+    url: `${options.serverRoot}${url}?${RsaV3Util.getCanonicalParams(params, 'form-urlencoded')}`,
     headers: authHeaders,
     method: method,
     responseType: responseType,
     transformResponse: [function (data) {
-      // 接口返回的未转换的原文
+      // Original response data before transformation
       return data;
     }],
-  })
+  });
 }
+
+// Example POST request
 getData({
   url: '/rest/v3.0/auth/idcard',
-  params:{
+  params: {
     request_flow_id: 'xxxx',
     name: 'xxx',
     id_card_number: 'xxxx',
@@ -37,14 +43,16 @@ getData({
   method: 'POST'
 })
 .then(res => {
-  console.log('res------>', res.data)
+  console.log('res------>', res.data);
 })
 .catch(err => {
-  console.log('err------>', err)
-})
+  console.log('err------>', err);
+});
+
+// Example GET request
 getData({
   url: '/rest/v3.0/auth/idcard',
-  params:{
+  params: {
     request_flow_id: 'xxxx',
     name: 'xxx',
     id_card_number: 'xxxx',
@@ -52,8 +60,8 @@ getData({
   method: 'GET'
 })
 .then(res => {
-  console.log('res------>', res.data)
+  console.log('res------>', res.data);
 })
 .catch(err => {
-  console.log('err------>', err)
-})
+  console.log('err------>', err);
+});
