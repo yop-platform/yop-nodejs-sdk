@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { HttpUtils } from './HttpUtils';
+import { HttpUtils } from './HttpUtils.js';
 
 interface CashierParams {
   appKey: string;

@@ -1,8 +1,8 @@
-import { getUniqueId } from './GetUniqueId';
-import { HttpUtils } from './HttpUtils';
+import { getUniqueId } from './GetUniqueId.js';
+import { HttpUtils } from './HttpUtils.js';
 import crypto from 'crypto';
 import md5 from 'md5';
-import { AuthHeaderOptions } from '../types';
+import { AuthHeaderOptions } from '../types.js';
 
 // Extend Date prototype with Format method
 declare global {
