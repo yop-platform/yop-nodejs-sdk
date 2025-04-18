@@ -1,3 +1,4 @@
+import { Method, ResponseType } from "axios";
 export interface RequestOptions {
   appKey: string;
   secretKey: string;
@@ -9,7 +10,7 @@ export interface RequestOptions {
 }
 
 export interface AuthHeaderOptions extends RequestOptions {
-  method: string;
+  method: Method;
   url: string;
   params?: Record<string, any>;
 }
@@ -17,8 +18,8 @@ export interface AuthHeaderOptions extends RequestOptions {
 export interface RequestParams {
   url: string;
   params?: Record<string, any>;
-  method: string;
-  responseType?: string;
+  method: Method;
+  responseType?: ResponseType;
 }
 
 export interface ParamMap {

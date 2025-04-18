@@ -1,17 +1,6 @@
-import urlencode from 'urlencode';
 import { Request } from '../types';
 
 export class HttpUtils {
-  /**
-   * Normalizes a path by URL encoding it but preserving forward slashes
-   * @param path - The path to normalize
-   * @returns Normalized path
-   */
-  static normalizePath(path: string): string {
-    const tmp = urlencode(path);
-    return tmp.replace(/%2F/g, "/");
-  }
-
   /**
    * Normalizes a value by encoding special characters
    * @param value - The value to normalize
@@ -102,21 +91,6 @@ export class HttpUtils {
     }
     const temp = (haystack.length - needle.length);
     return temp >= 0;
-  }
-
-  /**
-   * Gets the canonical URI path
-   * @param path - The path to canonicalize
-   * @returns Canonical URI path
-   */
-  static getCanonicalURIPath(path: string): string {
-    if (!path) {
-      return "/";
-    } else if (this.startsWith(path, '/')) {
-      return this.normalizePath(path);
-    } else {
-      return "/" + this.normalizePath(path);
-    }
   }
 }
 

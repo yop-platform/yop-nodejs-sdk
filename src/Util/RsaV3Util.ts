@@ -47,7 +47,7 @@ export class RsaV3Util {
    * @returns Authentication headers
    */
   static getAuthHeaders(options: AuthHeaderOptions): Record<string, string> {
-    const { appKey, method, url, params = {}, secretKey, config = {} } = options;
+    const { appKey, method, url, params = {}, secretKey, config = { contentType: ''} } = options;
     
     if (config.contentType === 'application/json') {
       for (const key in params) {
