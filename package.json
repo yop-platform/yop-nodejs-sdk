@@ -14,18 +14,22 @@
     "start": "node dist/index.js",
     "test": "jest"
   },
-  "keywords": ["yop", "sdk", "payment", "typescript"],
+  "keywords": [
+    "yop",
+    "sdk",
+    "payment",
+    "typescript"
+  ],
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.8.4",
     "crypto-js": "^4.1.1",
     "form-data": "^4.0.0",
     "formstream": "^1.1.1",
     "md5": "^2.3.0",
-    "urlencode": "^1.1.0",
     "urlsafe-base64": "^1.0.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0", 
+    "@types/axios": "^0.14.0",
     "@types/jest": "^29.5.14",
     "@types/md5": "^2.3.5",
     "@types/node": "^22.13.4",

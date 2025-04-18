@@ -1,5 +1,8 @@
 # yop-nodejs-sdk (TypeScript)
 
+[![npm version](https://img.shields.io/npm/v/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
+
 ## 项目结构
 
 ```bash
@@ -24,37 +27,12 @@
 └── package.json
 ```
 
-## 安装依赖
+## 快速开始
 
-```bash
-npm install
-```
+### 前置条件
 
-## 构建项目
-
-```bash
-npm run build
-```
-
-## 开发模式
-
-```bash
-npm run dev
-```
-
-## 运行示例
-
-```bash
-npm start
-```
-
-## 运行测试
-
-```bash
-npm test
-```
-
-## 在你的项目中使用
+- Node.js 18+
+- 飞书项目系统账号和API凭证
 
 ### 安装
 
@@ -104,3 +82,46 @@ console.log(authHeaders);
 
 问题：为什么是接口返回的未经转换的res.data字符串
 原因：JSON.parse会改变原有的Number类型精度，导致验签失败
+
+## 开发
+
+### 安装
+
+```bash
+npm install
+```
+
+### 构建项目
+
+```bash
+npm run build
+```
+
+### 开发模式
+
+```bash
+npm run dev
+```
+
+### 运行示例
+
+```bash
+npm start
+```
+
+### 运行测试
+
+```bash
+npm test
+```
+
+### 使用GitHub Actions自动发布
+
+1. **创建GitHub Release**：
+    - 在GitHub仓库页面，点击"Releases"
+    - 点击"Create a new release"
+    - 输入版本号（例如v1.0.0）
+    - 添加发布说明
+    - 点击"Publish release"
+
+GitHub Actions将自动运行工作流，将包发布到npm。
