@@ -1,9 +1,9 @@
-# yop-nodejs-sdk (TypeScript)
+# @yeepay/yop-nodejs-sdk (TypeScript)
 
-> 本项目已废弃，请使用 [yop-typescript-sdk](https://github.com/yop-developer/yop-typescript-sdk)。
-> 
-[![npm version](https://img.shields.io/npm/v/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
-[![npm downloads](https://img.shields.io/npm/dm/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
+> 本项目已废弃，请使用 [yop-typescript-sdk](https://github.com/yop-platform/yop-typescript-sdk)。
+
+[![npm version](https://img.shields.io/npm/v/@yeepay/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/@yeepay/yop-nodejs-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/@yeepay/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/@yeepay/yop-nodejs-sdk)
 
 ## 项目结构
 
@@ -39,13 +39,13 @@
 ### 安装
 
 ```bash
-npm install yop-nodejs-sdk
+npm install @yeepay/yop-nodejs-sdk
 ```
 
 ### 使用示例 (TypeScript)
 
 ```typescript
-import { RsaV3Util } from 'yop-nodejs-sdk';
+import { RsaV3Util } from '@yeepay/yop-nodejs-sdk';
 
 // 配置选项
 const options = {
