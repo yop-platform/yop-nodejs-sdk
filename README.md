@@ -1,5 +1,7 @@
 # yop-nodejs-sdk (TypeScript)
 
+> 本项目已废弃，请使用 [yop-typescript-sdk](https://github.com/yop-developer/yop-typescript-sdk)。
+> 
 [![npm version](https://img.shields.io/npm/v/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
 [![npm downloads](https://img.shields.io/npm/dm/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/yop-nodejs-sdk)
 
