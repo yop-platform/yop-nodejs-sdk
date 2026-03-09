@@ -6,7 +6,7 @@ export { VerifyUtils } from './Util/VerifyUtils.js';
 export { CashierSupport } from './Util/CashierSupport.js';
 
 // Export types
-export * from './types';
+export * from './types.js';
 
 // Default export for backward compatibility
 import { getUniqueId } from './Util/GetUniqueId.js';
