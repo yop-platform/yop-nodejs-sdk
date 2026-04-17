@@ -47,15 +47,7 @@ export class RsaV3Util {
    * @returns Authentication headers
    */
   static getAuthHeaders(options: AuthHeaderOptions): Record<string, string> {
-    const { appKey, method, url, params: _params = {}, secretKey, config = { contentType: ''} } = options;
-    const params = JSON.parse(JSON.stringify(_params));
-
-    if (config.contentType === 'application/json') {
-      for (const key in params) {
-        params[key] = HttpUtils.normalize(params[key]);
-      }
-    }
-
+    const { appKey, method, url, params = {}, secretKey, config = { contentType: ''} } = options;
     const timestamp = new Date().Format("yyyy-MM-ddThh:mm:ssZ");
     const authString = 'yop-auth-v3/' + appKey + "/" + timestamp + "/1800";
     const HTTPRequestMethod = method;
