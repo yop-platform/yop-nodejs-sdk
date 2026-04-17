@@ -21,22 +21,22 @@ Date.prototype.Format = function (fmt: string): string {
     "q+": Math.floor((this.getMonth() + 3) / 3), // Quarter
     "S": this.getMilliseconds()                // Millisecond
   };
-  
+
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
   }
-  
+
   for (const k in o) {
     if (new RegExp("(" + k + ")").test(fmt)) {
       fmt = fmt.replace(
-        RegExp.$1, 
-        (RegExp.$1.length === 1) ? 
-          (o[k].toString()) : 
+        RegExp.$1,
+        (RegExp.$1.length === 1) ?
+          (o[k].toString()) :
           (("00" + o[k]).substr(("" + o[k]).length))
       );
     }
   }
-  
+
   return fmt;
 };
 
@@ -47,14 +47,15 @@ export class RsaV3Util {
    * @returns Authentication headers
    */
   static getAuthHeaders(options: AuthHeaderOptions): Record<string, string> {
-    const { appKey, method, url, params = {}, secretKey, config = { contentType: ''} } = options;
-    
+    const { appKey, method, url, params: _params = {}, secretKey, config = { contentType: ''} } = options;
+    const params = JSON.parse(JSON.stringify(_params));
+
     if (config.contentType === 'application/json') {
       for (const key in params) {
         params[key] = HttpUtils.normalize(params[key]);
       }
     }
-    
+
     const timestamp = new Date().Format("yyyy-MM-ddThh:mm:ssZ");
     const authString = 'yop-auth-v3/' + appKey + "/" + timestamp + "/1800";
     const HTTPRequestMethod = method;
@@ -67,7 +68,7 @@ export class RsaV3Util {
       'x-yop-content-sha256': RsaV3Util.getSha256AndHexStr(params, config, method),
       'x-yop-request-id': RsaV3Util.uuid(),
     };
-    
+
     const CanonicalHeaders = RsaV3Util.getCanonicalHeaders(headers);
     const CanonicalRequest =
       authString + "\n" +
@@ -75,16 +76,16 @@ export class RsaV3Util {
       CanonicalURI + "\n" +
       CanonicalQueryString + "\n" +
       CanonicalHeaders;
-      
+
     const signedHeaders = 'x-yop-appkey;x-yop-content-sha256;x-yop-request-id';
-    
+
     let r = secretKey;
     const a = "-----BEGIN PRIVATE KEY-----";
     const b = "-----END PRIVATE KEY-----";
     let private_key = "";
     const len = r.length;
     let start = 0;
-    
+
     while (start <= len) {
       if (private_key.length) {
         private_key += r.substr(start, 64) + '\n';
@@ -93,7 +94,7 @@ export class RsaV3Util {
       }
       start += 64;
     }
-    
+
     private_key = a + '\n' + private_key + b;
     const sign = crypto.createSign('RSA-SHA256');
     sign.update(CanonicalRequest);
@@ -107,7 +108,7 @@ export class RsaV3Util {
     let sig_len = sig.length;
     let find_len = 0;
     let start_len = sig_len - 1;
-    
+
     while (true) {
       if (sig.substr(start_len, 1) === "=") {
         find_len++;
@@ -116,7 +117,7 @@ export class RsaV3Util {
       }
       break;
     }
-    
+
     sig = sig.substr(0, sig_len - find_len);
     let signToBase64 = sig;
     signToBase64 += '$SHA256';
@@ -124,7 +125,7 @@ export class RsaV3Util {
     // Construct auth header
     headers.Authorization = "YOP-RSA2048-SHA256 " + authString + "/" +
       signedHeaders + "/" + signToBase64;
-      
+
     return headers;
   }
 
@@ -168,7 +169,7 @@ export class RsaV3Util {
     uuid += hash.substr(20, 12);
     return uuid;
   }
-  
+
   /**
    * Gets canonical parameters string
    * @param params - Request parameters
@@ -177,39 +178,39 @@ export class RsaV3Util {
    */
   static getCanonicalParams(params: Record<string, any> = {}, type?: string): string {
     const paramStrings: string[] = [];
-    
+
     for (const key in params) {
       let value = params[key];
-      
+
       if (!key) {
         continue;
       }
-      
+
       if (!value) {
         value = "";
       }
-      
+
       const normalizedKey = HttpUtils.normalize(key.trim());
       let normalizedValue: string;
-      
+
       if (type === 'form-urlencoded') {
         normalizedValue = HttpUtils.normalize(HttpUtils.normalize(value));
       } else {
         normalizedValue = HttpUtils.normalize(value.toString().trim());
       }
-      
+
       paramStrings.push(normalizedKey + '=' + normalizedValue);
     }
-    
+
     paramStrings.sort();
-    
+
     let strQuery = "";
     for (const i in paramStrings) {
       const kv = paramStrings[i];
       strQuery += strQuery.length === 0 ? "" : "&";
       strQuery += kv;
     }
-    
+
     return strQuery;
   }
 
@@ -221,12 +222,12 @@ export class RsaV3Util {
    * @returns SHA256 hash as hex string
    */
   static getSha256AndHexStr(
-    params: Record<string, any>, 
-    config: { contentType: string }, 
+    params: Record<string, any>,
+    config: { contentType: string },
     method: string
   ): string {
     let str = '';
-    
+
     if (config.contentType.includes('application/json') && method.toLowerCase() === 'post') {
       str = JSON.stringify(params);
     } else {
@@ -234,11 +235,11 @@ export class RsaV3Util {
         str = this.getCanonicalParams(params);
       }
     }
-    
+
     const sign = crypto.createHash('SHA256');
     sign.update(str);
     const sig = sign.digest('hex');
-    
+
     return sig;
   }
 }
