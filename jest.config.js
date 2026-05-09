@@ -14,6 +14,6 @@ export default {
     ],
   },
   testMatch: [
-    '**/src/test/**/*.ts'
+    '**/src/test/**/*.test.ts'
   ],
 };
