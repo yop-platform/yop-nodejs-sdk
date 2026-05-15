@@ -1,6 +1,4 @@
-# @yeepay/yop-nodejs-sdk (TypeScript)
-
-> 本项目已废弃，请使用 [yop-typescript-sdk](https://github.com/yop-platform/yop-typescript-sdk)。
+# @yeepay/yop-nodejs-sdk
 
 [![npm version](https://img.shields.io/npm/v/@yeepay/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/@yeepay/yop-nodejs-sdk)
 [![npm downloads](https://img.shields.io/npm/dm/@yeepay/yop-nodejs-sdk.svg)](https://www.npmjs.com/package/@yeepay/yop-nodejs-sdk)
@@ -11,7 +9,7 @@
 ├── CHANGELOG.md 版本变更
 ├── LICENSE
 ├── README.md
-├── src/ TypeScript 源代码目录
+├── src/ 源代码目录
 │   ├── Util/ 工具目录
 │   │   ├── GetUniqueId.ts
 │   │   ├── HttpUtils.ts
@@ -42,9 +40,9 @@
 npm install @yeepay/yop-nodejs-sdk
 ```
 
-### 使用示例 (TypeScript)
+### 使用示例
 
-```typescript
+```javascript
 import { RsaV3Util } from '@yeepay/yop-nodejs-sdk';
 
 // 配置选项
